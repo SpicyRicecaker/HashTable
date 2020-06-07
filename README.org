@@ -1,0 +1,31 @@
+#+TITLE: Hash Table Notes
+#+DESCRIPTION: Looks like fun, easy to implement, etc.
+
+* Hash Function
+- "ABCD" -> miracle -> 66
+* Collisions
+- "DCBA" -> miracle -> 66
+** Solutions
+- You can look for the next empty slot in the table and look in there (linear probing)
+- You can also *chain* the the values at that slot by making a linked list there
+* What is "miracle?"
+- Add up "A" + "B" + "C" + "D" = 266 mod 100 = 66
+- For alphanumeric values, add up the ACSII codes of each character and divide by the total size of the array
+** Solutions To Very Unbalanced hash tables
+- Increase size of table
+- Then rehash all values
+- Add a unique identifier to values?
+
+* Project Requirements
+- Clone StudentList
+- Instead of using linked lists, use hash table
+- Create a hash function (we're prob going to use alphanum ascii values)
+- 100 slots hash table, of an array
+- Handle collisions using chaining, making a linear linked list
+- If more than 3 collisions for any given list, double number of slots and rehash table (Make sure you update the array size for the hash function)
+** How to Rehash
+- Create a *new* array, double the size of the other
+- Begin to traverse the entire list of the old array pointer
+- Rehash every func, place in the array
+- set the original array pointer to this one
+- We're done!
