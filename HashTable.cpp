@@ -16,20 +16,25 @@ struct Student{
     char lNm[999];
     char id[7];
     float gpa;
+    Student* next = NULL;
 };
 
-void add(Student*** stuList);
+void add(Student*** stuList, int &hashSize);
 void getRid(Student*** stuList);
-void print(Student*** stuList);
+void print(Student*** stuList, int hashSize);
 void generateStudents(Student*** stuList);
 void quit(bool &running);
 void getValidFirstName(Student* &temp);
 void getValidLastName(Student* &temp);
 void getValidId(Student* &temp);
 void getValidGpa(Student* &temp);
+void hashFunction(Student* &temp, Student*** stuList, int &hashSize);
+int linkedLength(Student* head);
+void linkedAdd(Student* &oldHead, Student* newHead);
+void linkedPrint(Student* head);
 
 //The add method prompts the user for the firstname, lastname, id, and gpa of a student and adds that student along into the list of students, making sure to validate user input.
-void add(Student*** stuList){
+void add(Student*** stuList, int &hashSize){
 
 
     //Allocates the student to heap memory
@@ -62,19 +67,19 @@ void add(Student*** stuList){
     //
     //
     //
+    hashFunction(temp, stuList, hashSize);
    
     cout << "Student added! :)" << endl;
 }
 
 //The getRid method prompts the user for an ID of a student and removes it from the studentList
 void getRid(Student*** stuList){
+    cout << stuList[0] << endl;
 
     //Prompt and validate userinput for the ID of a student
     cout << "Please enter the id of the student. :)" << endl;
 
     while(true){
-
-        bool exists = false;
         bool allDig = true;
         char in[7] = "";
         cin.getline(in, 7);
@@ -103,7 +108,10 @@ void getRid(Student*** stuList){
 
 
 //The print function prints the first and last name, ID, and gpa of all students in the student list
-void print(Student*** stuList){
+void print(Student*** stuList, int hashSize){
+    for(int a = 0; a < hashSize; a++){
+        linkedPrint((*stuList)[a]);
+    }
 }
 
 //The quit function exits the program
@@ -125,15 +133,16 @@ int main(){
     bool running = true;
 
     //Make an array of student pointers, then make a pointer pointing to this particular array
-    Student** stuL = new Student*[100];
+    int hashSize = 100;
+    Student** stuL = new Student*[hashSize];
     Student*** stuList = &stuL;
 
     while(running){
-
         //Prompt and validate user for a command, then transition to the corresponding function accordingly
         cout << "Please enter a command. Type \"help\" for help. :)" << endl;
 
         while(true){
+            cout << "hash size is " << hashSize << endl;
             cin.get(commandIn, 8);
             cin.clear();
             cin.ignore(999, '\n');
@@ -152,9 +161,9 @@ int main(){
         }
 
         if(strcmp(commandIn, "ADD") == 0){
-            add(stuList);
+            add(stuList, hashSize);
         }else if(strcmp(commandIn, "PRINT") == 0){
-            print(stuList);
+            print(stuList, hashSize);
         }
         else if(strcmp(commandIn, "DELETE") == 0){
             getRid(stuList);
@@ -316,4 +325,73 @@ void getValidGpa(Student* &temp){
         cout << "That gpa does not exist... :/" << endl;
     }
 
+}
+
+void hashFunction(Student* &temp, Student*** stuList, int &hashSize){
+    //Determine the size of the array
+    //int hashSize = sizeof(*stuList)/sizeof((*stuList)[0]);
+    //Apparently can't determine allocated size so we passed in hashSize instead
+
+    //Hashing algorithm
+    int index = 0;
+    //Loop through the student ID
+    int idLen = strlen(temp->id);
+    for(int a = 0; a < idLen; ++a){
+        //Add the ascii value
+        index += (int)(temp->id[a]);
+    }
+    //Take the modulus of that over hashSizse, which should equal final index
+    index = (index%hashSize);
+
+    //Now we goto value at array.
+    //If the spot is empty
+    if((*stuList)[index] == NULL){
+        //Fill up, return
+        (*stuList)[index] = temp;
+        return;
+    }
+    //Otherwise, there is a conflict.
+    //If the arraysize is less than 3
+    else if(linkedLength((*stuList)[index]) < 3){
+        //Just add on to the end
+        linkedAdd((*stuList)[index], temp);
+    }
+    //Otherwise, there are more than 3 conflicts, and we need to rehash the entire table.
+    else{
+
+    }
+}
+
+//Traverses linked list and returns the length
+int linkedLength(Student* head){
+    int length = 0;
+    while(true){
+        if(head != NULL){
+            length++;
+        }else{
+            break;
+        }
+        head = head->next;
+    }
+    return length;
+}
+
+//Inserts at the linked list head
+void linkedAdd(Student* &oldHead, Student* newHead){
+    //set newHead next to oldHead
+    newHead->next = oldHead;
+    //setoldHead to newHead!
+    oldHead = newHead;
+}
+
+//Prints linked list, assumes head is not null
+void linkedPrint(Student* head){
+    while(true){
+        if(head!= NULL){
+            cout << head->fNm << ", " << head->lNm << ", " << head->id << ", " << head->gpa << endl;
+        }else{
+            break;
+        }
+        head = head->next;
+    }
 }
