@@ -20,7 +20,7 @@ struct Student{
 };
 
 void add(Student*** stuList, int &hashSize);
-void getRid(Student*** stuList);
+void getRid(Student*** stuList, int &hashSize);
 void print(Student*** stuList, int hashSize);
 void generateStudents(Student*** stuList);
 void quit(bool &running);
@@ -34,6 +34,7 @@ void linkedAdd(Student* &oldHead, Student* newHead);
 void linkedPrint(Student* head);
 int pow(int base, int exponent);
 int abs(int a);
+int hashAlgorithm(char* id, int hashSize);
 
 
 //The add method prompts the user for the firstname, lastname, id, and gpa of a student and adds that student along into the list of students, making sure to validate user input.
@@ -76,9 +77,7 @@ void add(Student*** stuList, int &hashSize){
 }
 
 //The getRid method prompts the user for an ID of a student and removes it from the studentList
-void getRid(Student*** stuList){
-    cout << stuList[0] << endl;
-
+void getRid(Student*** stuList, int &hashSize){
     //Prompt and validate userinput for the ID of a student
     cout << "Please enter the id of the student. :)" << endl;
 
@@ -98,16 +97,31 @@ void getRid(Student*** stuList){
         //If input is good
         if(allDig && strlen(in) == 6){
             //Run through the HASH TABLE BB
-            cout << "Student removed! :)" << endl;
-            return;
-        }
 
+            Student** curr = &((*stuList)[hashAlgorithm(in, hashSize)]);
+            Student* past = *curr;
+            while(true){
+                if(curr!=NULL){
+                    if(strcmp((*curr)->id, in) == 0){
+                        Student* currNext = (*curr)->next;
+                        delete *curr;
+                        *curr = currNext;
+                        past->next = currNext;
+                        cout << "Student removed! :)" << endl;
+                        return;
+                    }
+                }else{
+                    break;
+                }
+                past = *curr;
+                curr = &(((*curr)->next));
+            }
+        }
         cout << "That id does not exist. :o" << endl;
         return;
     }
     cout << "Please enter a six digit number. :)" << endl;
 }
-
 
 
 //The print function prints the first and last name, ID, and gpa of all students in the student list
@@ -171,7 +185,7 @@ int main(){
             print(stuList, hashSize);
         }
         else if(strcmp(commandIn, "DELETE") == 0){
-            getRid(stuList);
+            getRid(stuList, hashSize);
         }
         else if(strcmp(commandIn, "QUIT") == 0){
             quit(running);
@@ -338,43 +352,7 @@ void hashFunction(Student* &temp, Student*** stuList, int &hashSize){
     //Apparently can't determine allocated size so we passed in hashSize instead
 
     //Hashing algorithm
-    int index = 0;
-    //Loop through the student ID
-    int idLen = strlen(temp->id);
-    for(int a = 0; a < idLen; ++a){
-        int HS = hashSize;
-        int x = (int)(temp->id[a]);
-        switch(a){
-            //3Hs^2x^3
-            case 1:
-                index += (2 * pow(x, 1));
-                break;
-            //6Hsx^2
-            case 2:
-                index += (3 * pow(x, 2));
-                break;
-            //9x
-            case 3:
-                index += (5 * pow(x, 1));
-                break;
-            //6x
-            case 4:
-                index += (7 * pow(x, 2));
-                break;
-            //9Hsx^2
-            case 5:
-                index += (3 * pow(x, 1));
-                break;
-            //7hs^2x^3
-            case 6:
-                index += (5 * pow(x, 2));
-                break;
-        }
-    }
-    //Take the modulus of that over hashSizse, which should equal final index
-    cout << "index before" << index << endl;
-    index = abs((index%hashSize));
-    cout << "index after" << index << endl;
+    int index = hashAlgorithm(temp->id, hashSize);
 
     //Now we goto value at array.
     //If the spot is empty
@@ -469,4 +447,45 @@ int abs(int a){
     }else{
         return a;
     }
+}
+
+int hashAlgorithm(char* id, int hashSize){
+    int index = 0;
+    //Loop through the student ID
+    int idLen = strlen(id);
+    for(int a = 0; a < idLen; ++a){
+        //int HS = hashSize;
+        int x = (int)(id[a]);
+        switch(a){
+            //3Hs^2x^3
+            case 1:
+                index += (2 * pow(x, 1));
+                break;
+            //6Hsx^2
+            case 2:
+                index += (3 * pow(x, 2));
+                break;
+            //9x
+            case 3:
+                index += (5 * pow(x, 1));
+                break;
+            //6x
+            case 4:
+                index += (7 * pow(x, 2));
+                break;
+            //9Hsx^2
+            case 5:
+                index += (3 * pow(x, 1));
+                break;
+            //7hs^2x^3
+            case 6:
+                index += (5 * pow(x, 2));
+                break;
+        }
+    }
+    //Take the modulus of that over hashSizse, which should equal final index
+    cout << "index before" << index << endl;
+    index = abs((index%hashSize));
+    cout << "index after" << index << endl;
+    return index;
 }
