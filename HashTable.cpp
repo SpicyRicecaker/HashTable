@@ -505,5 +505,20 @@ int hashAlgorithm(char* id, int hashSize){
 }
 
 void generateStudents(Student*** stuList, int &hashSize){
+    //Prompt User to select the amount of random names that will be added, from 0 to 1000
 
+    //Tell user that existing IDs will be overwritten
+
+    //Int id counter = 0
+    //For loop
+    //
+    //Generate 2 random ints from 0 to 1000
+    //
+    //Grab corresponding first and last names from file
+    //
+    //Generate 1 random float from 0 to 6
+    //
+    //Hashfunction() in the student.
+    //
+    //Increment the id counter
 }
