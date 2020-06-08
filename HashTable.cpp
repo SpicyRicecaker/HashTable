@@ -32,6 +32,9 @@ void hashFunction(Student* &temp, Student*** stuList, int &hashSize);
 int linkedLength(Student* head);
 void linkedAdd(Student* &oldHead, Student* newHead);
 void linkedPrint(Student* head);
+int pow(int base, int exponent);
+int abs(int a);
+
 
 //The add method prompts the user for the firstname, lastname, id, and gpa of a student and adds that student along into the list of students, making sure to validate user input.
 void add(Student*** stuList, int &hashSize){
@@ -339,11 +342,39 @@ void hashFunction(Student* &temp, Student*** stuList, int &hashSize){
     //Loop through the student ID
     int idLen = strlen(temp->id);
     for(int a = 0; a < idLen; ++a){
-        //Add the ascii value
-        index += (int)(temp->id[a]);
+        int HS = hashSize;
+        int x = (int)(temp->id[a]);
+        switch(a){
+            //3Hs^2x^3
+            case 1:
+                index += (2 * pow(x, 1));
+                break;
+            //6Hsx^2
+            case 2:
+                index += (3 * pow(x, 2));
+                break;
+            //9x
+            case 3:
+                index += (5 * pow(x, 1));
+                break;
+            //6x
+            case 4:
+                index += (7 * pow(x, 2));
+                break;
+            //9Hsx^2
+            case 5:
+                index += (3 * pow(x, 1));
+                break;
+            //7hs^2x^3
+            case 6:
+                index += (5 * pow(x, 2));
+                break;
+        }
     }
     //Take the modulus of that over hashSizse, which should equal final index
-    index = (index%hashSize);
+    cout << "index before" << index << endl;
+    index = abs((index%hashSize));
+    cout << "index after" << index << endl;
 
     //Now we goto value at array.
     //If the spot is empty
@@ -419,4 +450,23 @@ void linkedPrint(Student* head){
         head = head->next;
     }
     cout << endl;
+}
+
+int pow(int base, int exponent){
+    int res = base;
+    if(exponent == 0){
+        return 1;
+    }
+    for(int a = 1; a < exponent; ++a){
+        res = base*res;
+    }
+    return res;
+}
+
+int abs(int a){
+    if(a < 0){
+        return -1*a;
+    }else{
+        return a;
+    }
 }
