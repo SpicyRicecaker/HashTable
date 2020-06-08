@@ -45,16 +45,13 @@ void add(Student*** stuList, int &hashSize){
     //Allocates the student to heap memory
     //stuList->push_back(new Student());
 
-    cout << "GAy" << endl;
     Student* temp = new Student;
     //Prompting the user for the first name
     //Also validate
-    cout << "GAY" << endl;
     getValidFirstName(temp);
 
     //Prompt user for last name
     //Then validate user input the same way as first name
-    cout << "GAy" << endl;
     getValidLastName(temp);
 
     //Prompt user for ID of the student
@@ -363,23 +360,23 @@ void hashFunction(Student* temp, Student*** stuList, int &hashSize){
     //Otherwise, there is a conflict.
     //If the arraysize is less than 3
     else if(linkedLength((*stuList)[index]) < 3){
-            Student** curr = &((*stuList)[index]);
-            Student* past = *curr;
-            while(true){
-                if(curr!=NULL){
-                    if(strcmp((*curr)->id, temp->id) == 0){
-                        Student* currNext = (*curr)->next;
-                        //delete *curr;
-                        *curr = currNext;
-                        past->next = currNext;
-                        return;
-                    }
-                }else{
+        Student** curr = &((*stuList)[index]);
+        Student* past = *curr;
+        while(true){
+            if(curr!=NULL){
+                if(strcmp((*curr)->id, temp->id) == 0){
+                    Student* currNext = (*curr)->next;
+                    //delete *curr;
+                    *curr = currNext;
+                    past->next = currNext;
                     break;
                 }
-                past = *curr;
-                curr = &(((*curr)->next));
+            }else{
+                break;
             }
+            past = *curr;
+            curr = &(((*curr)->next));
+        }
         linkedAdd((*stuList)[index], temp);
         return;
     }
