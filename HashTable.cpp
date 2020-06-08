@@ -5,6 +5,7 @@
 
 */
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #include <iterator>
 
@@ -22,13 +23,13 @@ struct Student{
 void add(Student*** stuList, int &hashSize);
 void getRid(Student*** stuList, int &hashSize);
 void print(Student*** stuList, int hashSize);
-void generateStudents(Student*** stuList);
+void generateStudents(Student*** stuList, int &hashSize);
 void quit(bool &running);
 void getValidFirstName(Student* &temp);
 void getValidLastName(Student* &temp);
 void getValidId(Student* &temp);
 void getValidGpa(Student* &temp);
-void hashFunction(Student* &temp, Student*** stuList, int &hashSize);
+void hashFunction(Student* temp, Student*** stuList, int &hashSize);
 int linkedLength(Student* head);
 void linkedAdd(Student* &oldHead, Student* newHead);
 void linkedPrint(Student* head);
@@ -44,13 +45,16 @@ void add(Student*** stuList, int &hashSize){
     //Allocates the student to heap memory
     //stuList->push_back(new Student());
 
-    Student* temp = new Student();
+    cout << "GAy" << endl;
+    Student* temp = new Student;
     //Prompting the user for the first name
     //Also validate
+    cout << "GAY" << endl;
     getValidFirstName(temp);
 
     //Prompt user for last name
     //Then validate user input the same way as first name
+    cout << "GAy" << endl;
     getValidLastName(temp);
 
     //Prompt user for ID of the student
@@ -83,8 +87,8 @@ void getRid(Student*** stuList, int &hashSize){
 
     while(true){
         bool allDig = true;
-        char in[7] = "";
-        cin.getline(in, 7);
+        char in[999];
+        cin.getline(in, 999);
         cin.clear();
 
         int inLen = strlen(in);
@@ -104,7 +108,7 @@ void getRid(Student*** stuList, int &hashSize){
                 if(curr!=NULL){
                     if(strcmp((*curr)->id, in) == 0){
                         Student* currNext = (*curr)->next;
-                        delete *curr;
+                        //delete *curr;
                         *curr = currNext;
                         past->next = currNext;
                         cout << "Student removed! :)" << endl;
@@ -147,7 +151,7 @@ int main(){
     cout.setf(ios::showpoint);
     cout.precision(2);
 
-    char commandIn[8] = "";
+    char commandIn[999];
 
     bool running = true;
 
@@ -162,9 +166,8 @@ int main(){
 
         while(true){
             //cout << "hash size is " << hashSize << endl;
-            cin.get(commandIn, 8);
+            cin.getline(commandIn, 999);
             cin.clear();
-            cin.ignore(999, '\n');
 
             int commandInLen = strlen(commandIn);
             for(int a = 0; a < commandInLen; a++){
@@ -259,10 +262,10 @@ void getValidId(Student* &temp){
 
         bool alldigit = true;
 
-        char in[7] = "";
+        char in[999];
 
         //Get input
-        cin.getline(in, 7);
+        cin.getline(in,999);
         cin.clear();
 
         //Make sure that the input is all digits
@@ -346,11 +349,7 @@ void getValidGpa(Student* &temp){
 
 }
 
-void hashFunction(Student* &temp, Student*** stuList, int &hashSize){
-    //Determine the size of the array
-    //int hashSize = sizeof(*stuList)/sizeof((*stuList)[0]);
-    //Apparently can't determine allocated size so we passed in hashSize instead
-
+void hashFunction(Student* temp, Student*** stuList, int &hashSize){
     //Hashing algorithm
     int index = hashAlgorithm(temp->id, hashSize);
 
@@ -364,8 +363,25 @@ void hashFunction(Student* &temp, Student*** stuList, int &hashSize){
     //Otherwise, there is a conflict.
     //If the arraysize is less than 3
     else if(linkedLength((*stuList)[index]) < 3){
-        //Just add on to the end
+            Student** curr = &((*stuList)[index]);
+            Student* past = *curr;
+            while(true){
+                if(curr!=NULL){
+                    if(strcmp((*curr)->id, temp->id) == 0){
+                        Student* currNext = (*curr)->next;
+                        //delete *curr;
+                        *curr = currNext;
+                        past->next = currNext;
+                        return;
+                    }
+                }else{
+                    break;
+                }
+                past = *curr;
+                curr = &(((*curr)->next));
+            }
         linkedAdd((*stuList)[index], temp);
+        return;
     }
     //Otherwise, there are more than 3 conflicts, and we need to rehash the entire table.
     else{
@@ -388,6 +404,7 @@ void hashFunction(Student* &temp, Student*** stuList, int &hashSize){
                 mew = mewN;
             }
         }
+        delete[] (*stuList);
         (*stuList) = newStuL;
         hashSize = newHashSize;
         cout << "IT'S REPEATING FOREVER LOL" << endl;
@@ -450,7 +467,7 @@ int abs(int a){
 }
 
 int hashAlgorithm(char* id, int hashSize){
-    int index = 0;
+    long long int index = 0;
     //Loop through the student ID
     int idLen = strlen(id);
     for(int a = 0; a < idLen; ++a){
@@ -461,23 +478,23 @@ int hashAlgorithm(char* id, int hashSize){
             case 1:
                 index += (2 * pow(x, 1));
                 break;
-            //6Hsx^2
+                //6Hsx^2
             case 2:
                 index += (3 * pow(x, 2));
                 break;
-            //9x
+                //9x
             case 3:
                 index += (5 * pow(x, 1));
                 break;
-            //6x
+                //6x
             case 4:
                 index += (7 * pow(x, 2));
                 break;
-            //9Hsx^2
+                //9Hsx^2
             case 5:
                 index += (3 * pow(x, 1));
                 break;
-            //7hs^2x^3
+                //7hs^2x^3
             case 6:
                 index += (5 * pow(x, 2));
                 break;
@@ -488,4 +505,8 @@ int hashAlgorithm(char* id, int hashSize){
     index = abs((index%hashSize));
     cout << "index after" << index << endl;
     return index;
+}
+
+void generateStudents(Student*** stuList, int &hashSize){
+
 }
