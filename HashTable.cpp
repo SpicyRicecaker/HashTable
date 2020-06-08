@@ -110,7 +110,9 @@ void getRid(Student*** stuList){
 //The print function prints the first and last name, ID, and gpa of all students in the student list
 void print(Student*** stuList, int hashSize){
     for(int a = 0; a < hashSize; a++){
-        linkedPrint((*stuList)[a]);
+        if((*stuList)[a] != NULL){
+            linkedPrint((*stuList)[a]);
+        }
     }
 }
 
@@ -142,7 +144,7 @@ int main(){
         cout << "Please enter a command. Type \"help\" for help. :)" << endl;
 
         while(true){
-            cout << "hash size is " << hashSize << endl;
+            //cout << "hash size is " << hashSize << endl;
             cin.get(commandIn, 8);
             cin.clear();
             cin.ignore(999, '\n');
@@ -358,7 +360,29 @@ void hashFunction(Student* &temp, Student*** stuList, int &hashSize){
     }
     //Otherwise, there are more than 3 conflicts, and we need to rehash the entire table.
     else{
-
+        //Create new array, double hashsize
+        int newHashSize = hashSize*2;
+        Student** newStuL = new Student*[newHashSize];
+        Student*** newStuList = &newStuL;
+        for(int a = 0; a < hashSize; ++a){
+            //Traverse linked list
+            Student* mew = (*stuList)[a];
+            Student *mewN;
+            while(true){
+                if(mew!=NULL){
+                    mewN = mew->next;
+                    mew->next = NULL;
+                    hashFunction(mew, newStuList, newHashSize);
+                }else{
+                    break;
+                }
+                mew = mewN;
+            }
+        }
+        (*stuList) = newStuL;
+        hashSize = newHashSize;
+        cout << "IT'S REPEATING FOREVER LOL" << endl;
+        hashFunction(temp, stuList, hashSize);
     }
 }
 
@@ -388,10 +412,11 @@ void linkedAdd(Student* &oldHead, Student* newHead){
 void linkedPrint(Student* head){
     while(true){
         if(head!= NULL){
-            cout << head->fNm << ", " << head->lNm << ", " << head->id << ", " << head->gpa << endl;
+            cout << head->fNm << ", " << head->lNm << ", " << head->id << ", " << head->gpa << " -> ";
         }else{
             break;
         }
         head = head->next;
     }
+    cout << endl;
 }
