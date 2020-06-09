@@ -24,6 +24,7 @@ struct Student{
 void add(Student*** stuList, int &hashSize);
 void getRid(Student*** stuList, int &hashSize);
 void print(Student*** stuList, int hashSize);
+void printRegular(Student*** stuList, int hashSize);
 void generateStudents(Student*** stuList, int &hashSize, char** fFN, char** fLN);
 void quit(bool &running);
 void getValidFirstName(Student* &temp);
@@ -34,6 +35,7 @@ void hashFunction(Student* temp, Student*** stuList, int &hashSize);
 int linkedLength(Student* head);
 void linkedAdd(Student* &oldHead, Student* newHead);
 void linkedPrint(Student* head);
+void linkedPrintReg(Student* head);
 int pow(int base, int exponent);
 int abs(int a);
 int hashAlgorithm(char* id, int hashSize);
@@ -128,10 +130,15 @@ void getRid(Student*** stuList, int &hashSize){
 
 //The print function prints the first and last name, ID, and gpa of all students in the student list
 void print(Student*** stuList, int hashSize){
+    bool empty = true;
     for(int a = 0; a < hashSize; a++){
         if((*stuList)[a] != NULL){
+            empty = false;
             linkedPrint((*stuList)[a]);
         }
+    }
+    if(empty){
+        cout << "The student list is empty!" << endl;
     }
 }
 
@@ -161,6 +168,7 @@ int main(){
     //Arrays of student first and last names that will be filled by file info when RNG is called.
     char* fileFirstNames[1001];
     char** fFN = &fileFirstNames[0];
+    fFN[0] = NULL;
     char* fileLastNames[1001];
     char** fLN = &fileLastNames[0];
 
@@ -180,8 +188,10 @@ int main(){
 
         if(strcmp(commandIn, "ADD") == 0){
             add(stuList, hashSize);
-        }else if(strcmp(commandIn, "PRINT") == 0){
+        }else if(strcmp(commandIn, "TABLE") == 0){
             print(stuList, hashSize);
+        }else if(strcmp(commandIn, "PRINT") == 0){
+            printRegular(stuList, hashSize);
         }
         else if(strcmp(commandIn, "DELETE") == 0){
             getRid(stuList, hashSize);
@@ -190,7 +200,7 @@ int main(){
             quit(running);
         }
         else if(strcmp(commandIn, "HELP") == 0){
-            cout << "----------\n\"add\" to add a new student.\n\"delete\" to delete a student.\n\"print\" to print the student list.\n\"RNG\" to generate and add a random number of students from 0-1000.\n\"quit\" to exit the program. :)\n----------" << endl;
+            cout << "----------\n\"add\" to add a new student.\n\"delete\" to delete a student.\n\"table\" to print the student list in hash table format.\n\"print\" to print in regular format.\n\"RNG\" to generate and add a random number of students from 0-1000.\n\"quit\" to exit the program. :)\n----------" << endl;
         }else if(strcmp(commandIn, "RNG") == 0){
             generateStudents(stuList, hashSize, fFN, fLN);
         }else{
@@ -471,7 +481,19 @@ void linkedPrint(Student* head){
         }
         head = head->next;
     }
-    cout << endl;
+    cout << "\n" << endl;
+}
+
+//Prints linked list, assumes head is not null, doesn't add arrows
+void linkedPrintReg(Student* head){
+    while(true){
+        if(head!= NULL){
+            cout << head->fNm << "  " << head->lNm << "  " << head->id << "  " << head->gpa << "\n" <<endl;
+        }else{
+            break;
+        }
+        head = head->next;
+    }
 }
 
 int pow(int base, int exponent){
@@ -630,4 +652,17 @@ char* intToSixId(int n){
         tmp[counter++] = (char)((int)((n/(pow(10,(a-1))))%10)+'0');
     }
     return tmp;
+}
+
+void printRegular(Student*** stuList, int hashSize){
+    bool empty = true;
+    for(int a = 0; a < hashSize; a++){
+        if((*stuList)[a] != NULL){
+            empty = false;
+            linkedPrintReg((*stuList)[a]);
+        }
+        }
+    if(empty){
+        cout << "The student list is empty!" << endl;
+    }
 }
