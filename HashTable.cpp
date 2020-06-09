@@ -138,7 +138,7 @@ void print(Student*** stuList, int hashSize){
         }
     }
     if(empty){
-        cout << "The student list is empty!" << endl;
+        cout << "The student list is empty! ;)" << endl;
     }
 }
 
@@ -177,7 +177,6 @@ int main(){
 
     while(running){
 
-        //cout << "hash size is " << hashSize << endl;
         cin.getline(commandIn, 999);
         cin.clear();
 
@@ -402,8 +401,6 @@ void hashFunction(Student* temp, Student*** stuList, int &hashSize){
         Student* past = *curr;
         while(true){
             if((*curr)!=NULL){
-                cout << "CURRENT ID IS " << (*curr)->id << endl;
-                cout << "TEMP ID IS " << temp->id << endl;
                 if(strcmp((*curr)->id, temp->id) == 0){
                     Student* currNext = (*curr)->next;
                     //delete *curr;
@@ -444,7 +441,6 @@ void hashFunction(Student* temp, Student*** stuList, int &hashSize){
         delete[] (*stuList);
         (*stuList) = newStuL;
         hashSize = newHashSize;
-        cout << "IT'S REPEATING FOREVER LOL" << endl;
         hashFunction(temp, stuList, hashSize);
     }
 }
@@ -550,9 +546,7 @@ int hashAlgorithm(char* id, int hashSize){
         }
     }
     //Take the modulus of that over hashSizse, which should equal final index
-    cout << "index before" << index << endl;
     index = abs((index%hashSize));
-    cout << "--------------\nindex after:" << index << ":\n----------------"<< endl;
     return index;
 }
 
@@ -567,7 +561,7 @@ void generateStudents(Student*** stuList, int &hashSize, char** fFN, char** fLN)
     int nameNumber = atoi(numToAdd);
 
     //Tell user that students with existing IDs will be overwritten
-    cout << "Know that students with existing IDs will be overwritten. Are your sure you want to proceed? (y/n) :o" << endl;
+    cout << "Students with overlapping IDs will be overwritten. Are your sure you want to proceed? (y/n) :o" << endl;
     while(true){
         cin.getline(numToAdd, 999);
         cin.clear();
@@ -624,22 +618,17 @@ void generateStudents(Student*** stuList, int &hashSize, char** fFN, char** fLN)
         //Generate 1 random float number from 0 to 10
         float gpa = ((float)rand())/((float)(RAND_MAX/10));
         //Grab corresponding first and last names from file
-        cout << "copying first name" << endl;
         strcpy(temp->fNm,fFN[firstNameIndex]);
-        cout << "copying last name" << endl;
         strcpy(temp->lNm,fLN[lastNameIndex]);
         //Then gpa
         temp->gpa = gpa;
         //Then id
-        cout << "copying id" << endl;
         strcpy(temp->id, intToSixId(a));
-        cout << "to convert is:"<< a << endl;
-        cout << "conversion result is:" << temp->id << endl;
         //Hashfunction() in the student.
         hashFunction(temp, stuList, hashSize);
         //Increment the id counter, taken
-        cout << "Done, next iteration" << endl;
     }
+    cout << nameNumber << " students were successfully entered! :]" << endl;
 }
 
 char* intToSixId(int n){
