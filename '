@@ -391,9 +391,7 @@ void hashFunction(Student* temp, Student*** stuList, int &hashSize){
         Student** curr = &((*stuList)[index]);
         Student* past = *curr;
         while(true){
-            if((*curr)!=NULL){
-                cout << "CURRENT ID IS " << (*curr)->id << endl;
-                cout << "TEMP ID IS " << temp->id << endl;
+            if(curr!=NULL){
                 if(strcmp((*curr)->id, temp->id) == 0){
                     Student* currNext = (*curr)->next;
                     //delete *curr;
@@ -530,7 +528,7 @@ int hashAlgorithm(char* id, int hashSize){
     //Take the modulus of that over hashSizse, which should equal final index
     cout << "index before" << index << endl;
     index = abs((index%hashSize));
-    cout << "--------------\nindex after:" << index << ":\n----------------"<< endl;
+    cout << "index after" << index << endl;
     return index;
 }
 
@@ -602,21 +600,17 @@ void generateStudents(Student*** stuList, int &hashSize, char** fFN, char** fLN)
         //Generate 1 random float number from 0 to 10
         float gpa = ((float)rand())/((float)(RAND_MAX/10));
         //Grab corresponding first and last names from file
-        cout << "copying first name" << endl;
         strcpy(temp->fNm,fFN[firstNameIndex]);
-        cout << "copying last name" << endl;
         strcpy(temp->lNm,fLN[lastNameIndex]);
         //Then gpa
         temp->gpa = gpa;
         //Then id
-        cout << "copying id" << endl;
         strcpy(temp->id, intToSixId(a));
-        cout << "to convert is:"<< a << endl;
-        cout << "conversion result is:" << temp->id << endl;
+
+        return;
         //Hashfunction() in the student.
         hashFunction(temp, stuList, hashSize);
         //Increment the id counter, taken
-        cout << "Done, next iteration" << endl;
     }
 }
 
@@ -626,8 +620,7 @@ char* intToSixId(int n){
     //123456
     int counter = 0;
     for(int a = 6; a >=1; --a){
-        //(char)((int)((number/10^(digits-1))%10)-'0')
-        tmp[counter++] = (char)((int)((n/(pow(10,(a-1))))%10)+'0');
+        tmp[counter++] = (int)(n/(pow(10,(a-1)));
     }
     return tmp;
 }
