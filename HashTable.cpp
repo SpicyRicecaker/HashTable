@@ -2,17 +2,15 @@
   Author: Andy Li
   Date: 06/07/2020
   StudentList: A program that can store the first name, last name, id, and gpa of multiple students using hash tables. It features 3 main functions: the add, delete, and print functions, which can add a new student to the list, remove a student from the list based on their ID, and print out the list of students, respectively.
-
 */
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <iterator>
-#include <cstdlib>
+#include <cstdlib> // This is used to generate random numbers
 
 using namespace std;
 
-//A student needs a first name, last name, id, and gpa.
+//A student needs a first name, last name, id, gpa, and the next student in the linked list, for collisions
 struct Student{
     char fNm[999];
     char lNm[999];
@@ -21,33 +19,48 @@ struct Student{
     Student* next = NULL;
 };
 
+//The add function asks the user to input student information, and inserts it into the table via hashfunction, utilizing hashing
 void add(Student*** stuList, int &hashSize);
+//The getRid function removes a student from the hashtable based off id, finds location by hashing
 void getRid(Student*** stuList, int &hashSize);
+//The print function loops through the entire hash table array and linked lists to print each student
 void print(Student*** stuList, int hashSize);
+//The print regular function doesn't include the arrows and commas, more like a list format
 void printRegular(Student*** stuList, int hashSize);
+//The generate students generates up to 1000 students at a time and stores them in the the hash table
 void generateStudents(Student*** stuList, int &hashSize, char** fFN, char** fLN);
+//The quit function sets running to false
 void quit(bool &running);
+//The get valid (x) functions are very redundant, they all process input and store into struct
+//Makes sure that input is not null
 void getValidFirstName(Student* &temp);
 void getValidLastName(Student* &temp);
+//Makes sure that id is 6 digits
 void getValidId(Student* &temp);
+//Makes sure that GPA is a float
 void getValidGpa(Student* &temp);
+//Very important function. Calls hashAlgorithm to find the place to insert new students, while also rehashing given more than 3 collisions
 void hashFunction(Student* temp, Student*** stuList, int &hashSize);
+//Traverses linked list to find its length
 int linkedLength(Student* head);
+//Adds to a linked list through the head
 void linkedAdd(Student* &oldHead, Student* newHead);
+//Prints the linked list with arrows by traversal
 void linkedPrint(Student* head);
+//Prints the linked list without arrows by traversal
 void linkedPrintReg(Student* head);
+//Takes in an integer and exponent and returns the result
 int pow(int base, int exponent);
+//Returns the absolute value of the int inputted
 int abs(int a);
+//Uses the hashing algorithm to turn a string of characters into a hash code
 int hashAlgorithm(char* id, int hashSize);
+//Turns an integer to a 6 digit id in char* form
 char* intToSixId(int n);
 
-//The add method prompts the user for the firstname, lastname, id, and gpa of a student and adds that student along into the list of students, making sure to validate user input.
+//The add method prompts the user for the firstname, lastname, id, and gpa of a student and adds that student along into the hash table of students, making sure to validate user input.
 void add(Student*** stuList, int &hashSize){
-
-
     //Allocates the student to heap memory
-    //stuList->push_back(new Student());
-
     Student* temp = new Student;
     //Prompting the user for the first name
     //Also validate
@@ -63,18 +76,7 @@ void add(Student*** stuList, int &hashSize){
     //Prompt user for gpa
     getValidGpa(temp);
 
-    //Hash it in somehow!!
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
+    //Hash it in!
     hashFunction(temp, stuList, hashSize);
    
     cout << "Student added! :)" << endl;
@@ -86,6 +88,7 @@ void getRid(Student*** stuList, int &hashSize){
     cout << "Please enter the id of the student. :)" << endl;
 
     while(true){
+    //Validates user inputted id
         bool allDig = true;
         char in[999];
         cin.getline(in, 999);
@@ -101,15 +104,20 @@ void getRid(Student*** stuList, int &hashSize){
         //If input is good
         if(allDig && strlen(in) == 6){
             //Run through the HASH TABLE BB
-
+            //Set current to the beginning of the linked list that the hash algorithm resulted in
             Student** curr = &((*stuList)[hashAlgorithm(in, hashSize)]);
             Student* past = *curr;
             while(true){
+                //While we're not at the end of the linked list
                 if(curr!=NULL){
+                    //Once we've found a match
                     if(strcmp((*curr)->id, in) == 0){
+                        //Remember current's next
                         Student* currNext = (*curr)->next;
                         //delete *curr;
+                        //Set current to its next
                         *curr = currNext;
+                        //Set past also to its next, this accounts for root case
                         past->next = currNext;
                         cout << "Student removed! :)" << endl;
                         return;
@@ -117,26 +125,31 @@ void getRid(Student*** stuList, int &hashSize){
                 }else{
                     break;
                 }
+                //Otherwise keep traversing the list
                 past = *curr;
                 curr = &(((*curr)->next));
             }
+            //If we've escaped while loop without returning we know that the id was not found
+            cout << "That id does not exist. :o" << endl;
+            return;
         }
-        cout << "That id does not exist. :o" << endl;
-        return;
+        //Reprompt
+        cout << "Please enter a six digit number. :)" << endl;
     }
-    cout << "Please enter a six digit number. :)" << endl;
 }
 
 
 //The print function prints the first and last name, ID, and gpa of all students in the student list
 void print(Student*** stuList, int hashSize){
     bool empty = true;
+    //Goes through the hash table and prints the linked list of slots that are not null
     for(int a = 0; a < hashSize; a++){
         if((*stuList)[a] != NULL){
             empty = false;
             linkedPrint((*stuList)[a]);
         }
     }
+    //If we've hit nothing, table is empty
     if(empty){
         cout << "The student list is empty! ;)" << endl;
     }
@@ -144,8 +157,8 @@ void print(Student*** stuList, int hashSize){
 
 //The quit function exits the program
 void quit(bool &running){
-    cout << "Program will now exit. CY@! ;)" << endl;
     running = false;
+    cout << "Program will now exit. CY@! ;)" << endl;
 }
 
 //The main method for student list
@@ -174,12 +187,12 @@ int main(){
 
     //Prompt and validate user for a command, then transition to the corresponding function accordingly
     cout << "Please enter a command. Type \"help\" for help. :)" << endl;
-
     while(running){
-
+        //Each iteration we look for a command
         cin.getline(commandIn, 999);
         cin.clear();
 
+        //Set everything to caps
         int commandInLen = strlen(commandIn);
         for(int a = 0; a < commandInLen; a++){
             commandIn[a] = toupper(commandIn[a]);
@@ -208,6 +221,7 @@ int main(){
     }
 }
 
+//Basically makes sure that the name is not NULL or has no spaces, stores into fNm of struct
 void getValidFirstName(Student* &temp){
     cout << "Please enter the first name of the student. :)" << endl;
     while(true){
@@ -238,6 +252,7 @@ void getValidFirstName(Student* &temp){
     }
 }
 
+//Basically makes sure that the name is not NULL or has no spaces, stores into lNm of struct
 void getValidLastName(Student* &temp){
     cout << "Please enter the last name of the student. :)" << endl;
     while(true){
@@ -262,6 +277,7 @@ void getValidLastName(Student* &temp){
     }
 }
 
+//Checks to make sure that the string the user inputted is 6 digits and all digits
 void getValidId(Student* &temp){
     cout << "Please enter the ID of the student. :)" << endl;
 
@@ -292,6 +308,7 @@ void getValidId(Student* &temp){
     }
 }
 
+//
 void getValidNumber(char* numToAdd){
     cout << "Please enter the amount of random names that will be added, from 0 to 1000. :)" << endl;
 
@@ -312,13 +329,14 @@ void getValidNumber(char* numToAdd){
         }
 
         //If it's also 6 characters in length then continue
-        if(alldigit && strlen(numToAdd) <= 6 && strlen(numToAdd) >= 1){
+        if(alldigit && strlen(numToAdd) <= 4 && strlen(numToAdd) >= 1){
             break;
         }
         cout << "Please enter a number between 0 and 1000. :/" << endl;
     }
 }
 
+//Makes sure that it's a float, also converts it into a float
 void getValidGpa(Student* &temp){
     cout << "Please enter the gpa of the student. :)" << endl;
 
@@ -383,6 +401,7 @@ void getValidGpa(Student* &temp){
 
 }
 
+//Calls hashalgorithm to insert students where needed, resolves collisions too
 void hashFunction(Student* temp, Student*** stuList, int &hashSize){
     //Hashing algorithm
     int index = hashAlgorithm(temp->id, hashSize);
@@ -397,10 +416,12 @@ void hashFunction(Student* temp, Student*** stuList, int &hashSize){
     //Otherwise, there is a conflict.
     //If the arraysize is less than 3
     else if(linkedLength((*stuList)[index]) < 3){
+        //Set current to the beginning node of the linked list
         Student** curr = &((*stuList)[index]);
         Student* past = *curr;
         while(true){
             if((*curr)!=NULL){
+                //Replace any repeat IDs, by deleting first
                 if(strcmp((*curr)->id, temp->id) == 0){
                     Student* currNext = (*curr)->next;
                     //delete *curr;
@@ -414,6 +435,7 @@ void hashFunction(Student* temp, Student*** stuList, int &hashSize){
             past = *curr;
             curr = &(((*curr)->next));
         }
+        //... then inserting
         linkedAdd((*stuList)[index], temp);
         return;
     }
@@ -424,7 +446,7 @@ void hashFunction(Student* temp, Student*** stuList, int &hashSize){
         Student** newStuL = new Student*[newHashSize];
         Student*** newStuList = &newStuL;
         for(int a = 0; a < hashSize; ++a){
-            //Traverse linked list
+            //Traverse the old hashtable, insert everything into the new one, with the hashalgorithm now accounting for double the size
             Student* mew = (*stuList)[a];
             Student *mewN;
             while(true){
@@ -438,9 +460,13 @@ void hashFunction(Student* temp, Student*** stuList, int &hashSize){
                 mew = mewN;
             }
         }
+        //Deallocate old table
         delete[] (*stuList);
+        //Set old table pointer to new table
         (*stuList) = newStuL;
+        //Set old hashsize to new hashsize
         hashSize = newHashSize;
+        //Insert the node that had the conflict
         hashFunction(temp, stuList, hashSize);
     }
 }
@@ -511,6 +537,7 @@ int abs(int a){
     }
 }
 
+//A really pointless formula that works to hash ascii codes so
 int hashAlgorithm(char* id, int hashSize){
     long long int index = 0;
     //Loop through the student ID
@@ -550,6 +577,7 @@ int hashAlgorithm(char* id, int hashSize){
     return index;
 }
 
+//Generates between 0 and 1000 students by reading from a first name and last name file
 void generateStudents(Student*** stuList, int &hashSize, char** fFN, char** fLN){
     //Prompt User to select the amount of random names that will be added, from 0 to 1000
 
